@@ -1,0 +1,95 @@
+sfDoctrineActAsActivablePlugin
+=============================
+
+The `sfDoctrineActAsActivablePlugin` is a symfony plugin that allows use of the doctrine behavior actAsActivable.
+
+This behavior provides methods on your model for setting "is active"/"is not active" state to doctrine records.
+
+This plugin allow  cascade activate/desactivate between doctrine relation
+
+Installation
+------------
+
+  * Install the plugin
+
+        $ symfony plugin:install sfDoctrineActAsSortablePlugin
+
+  * Activate the plugin in your project configuration file (in config/ProjectConfiguration.class.php)
+
+    class ProjectConfiguration extends sfProjectConfiguration
+    {
+        public function setup()
+        {
+            //...
+            $this->enablePlugins('sfDoctrineActAsActivablePlugin');
+        }
+    }
+
+  * Apply the behavior to your model in your schema file `config/doctrine/schema.yml`, ie:
+
+     -) simple
+        [yml]
+        model:
+          actAs: [Activable]
+
+     -) advenced
+        [yml]
+        model:
+          actAs: 
+            Activable:
+              name: is_active
+              alias: ~
+              options:
+                default: true
+              indexName: activable
+              cascade: 
+                down: true
+
+  * Rebuild your models and database
+  
+        $ symfony doctrine:build-all-reload
+    
+    alternatively you could build the models, the sql, then run the sql manually
+        
+  * Clear your cache
+
+        $ symfony cc
+
+
+(comming soon)
+
+Available schema options:
+------------------------
+
+     -) advenced
+        [yml]
+        model:
+          actAs: 
+            Activable:
+              cascade: 
+                up: true
+
+Available Record Methods
+------------------------
+
+  * activate
+
+        [php]
+        $record->activate();
+      
+  * desactivate
+  
+        [php]
+        $record->demote();
+      
+  * fullActivate
+  
+        [php]
+        $record->fullActivate();
+      
+  * fullDesactivate
+  
+        [php]
+        $record->fullDesactivate();
+      
+        

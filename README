@@ -80,7 +80,7 @@ Available Record Methods
   * desactivate
   
         [php]
-        $record->demote();
+        $record->desactivate();
       
   * fullActivate
   

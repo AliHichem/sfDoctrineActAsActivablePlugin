@@ -63,20 +63,22 @@ class Doctrine_Template_Listener_Activable extends Doctrine_Record_Listener
      */
     public function preDqlSelect(Doctrine_Event $event)
     {
-        $params = $event->getParams();
-        $field = $params['alias'] . '.' . $this->_options['name'];
-        $query = $event->getQuery();
-
-        // We only need to add the restriction if:
-        // 1 - We are in the root query
-        // 2 - We are in the subquery and it defines the component with that alias
-        if ((!$query->isSubquery() || ($query->isSubquery() && $query->contains(' ' . $params['alias'] . ' '))) && !$query->contains($field))
+        if(sfConfig::get('activable_dql_select',TRUE) === TRUE)
         {
-            if ($this->_options['type'] == 'boolean')
+            $params = $event->getParams();
+            $field = $params['alias'] . '.' . $this->_options['name'];
+            $query = $event->getQuery();
+            // We only need to add the restriction if:
+            // 1 - We are in the root query
+            // 2 - We are in the subquery and it defines the component with that alias
+            if ((!$query->isSubquery() || ($query->isSubquery() && $query->contains(' ' . $params['alias'] . ' '))) && !$query->contains($field))
             {
-                $query->addPendingJoinCondition(
-                        $params['alias'], $field . ' = ' . $query->getConnection()->convertBooleans(true)
-                );
+                if ($this->_options['type'] == 'boolean')
+                {
+                    $query->addPendingJoinCondition(
+                            $params['alias'], $field . ' = ' . $query->getConnection()->convertBooleans(true)
+                    );
+                }
             }
         }
     }

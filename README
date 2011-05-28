@@ -12,39 +12,68 @@ Installation
 
   * Install the plugin
 
-        $ symfony plugin:install sfDoctrineActAsSortablePlugin
+        $ symfony plugin:install sfDoctrineActAsActivablePlugin
 
   * Activate the plugin in your project configuration file (in config/ProjectConfiguration.class.php)
+and enable the Doctrine callbaks.
 
-    class ProjectConfiguration extends sfProjectConfiguration
-    {
-        public function setup()
+        class ProjectConfiguration extends sfProjectConfiguration
         {
-            //...
-            $this->enablePlugins('sfDoctrineActAsActivablePlugin');
+            public function setup()
+            {
+                //...
+                $this->enablePlugins('sfDoctrineActAsActivablePlugin');
+            }
+            public function configureDoctrine(Doctrine_Manager $manager) 
+            {
+                // Enable callbacks so that Activable behavior can be used
+                $manager->setAttribute(Doctrine_Core::ATTR_USE_DQL_CALLBACKS, true);
+            }
         }
     }
 
   * Apply the behavior to your model in your schema file `config/doctrine/schema.yml`, ie:
 
-     -) simple
-        [yml]
-        model:
-          actAs: [Activable]
+        # simple
+            [yml]
+            model:
+              actAs: [Activable]
 
-     -) advenced
-        [yml]
-        model:
-          actAs: 
-            Activable:
-              name: is_active
-              alias: ~
-              options:
-                default: true
-              indexName: activable
-              cascade: 
-                down: true
+        # advenced
+            [yml]
+            model:
+              actAs: 
+                Activable:
+                  name: is_active
+                  alias: ~
+                  options:
+                    default: true
+                  indexName: activable
+                  cascade: 
+                    down: true
 
+  * (optional): If you prefer apply a general config for all your activable model, leave activable
+    declaration in your schema with "~" and set the default config in your app.yml
+        
+        # config/doctrine/schema.yml
+            Mymodel:
+              actAs: 
+                Activable: ~
+        
+        # app/myapp/config/app.yml
+            all:
+              activable:
+                name: is_active
+                alias: null
+                type: boolean
+                length: 1
+                options:
+                  default: true
+                indexName: activable
+                cascade:
+                  down: false
+                  up: false
+        
   * Rebuild your models and database
   
         $ symfony doctrine:build-all-reload
@@ -56,12 +85,20 @@ Installation
         $ symfony cc
 
 
+  * when working with activale behavior , you will probably want to show all your 
+records (active and non-active) to be able to enable the "non-active" 
+items. To do that without adding a condition in your DQL, you can force the behavior
+with:
+
+        // put this line before building your Doctrine Query
+        sfConfig::set('activable_dql_select', FALSE);
+
+
 (comming soon)
 
 Available schema options:
 ------------------------
 
-     -) advenced
         [yml]
         model:
           actAs: 

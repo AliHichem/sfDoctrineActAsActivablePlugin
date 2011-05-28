@@ -1,0 +1,13 @@
+
+all:
+  activable:
+    name: is_active
+    alias: null
+    type: boolean
+    length: 1
+    options:
+      default: true
+    indexName: activable
+    cascade:
+      down: true
+      up: false

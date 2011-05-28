@@ -18,19 +18,7 @@ class Doctrine_Template_Activable extends Doctrine_Template
      *
      * @var string
      */
-    protected $_options = array('name' => 'is_active',
-        'alias' => null,
-        'type' => 'boolean',
-        'length' => 1,
-        'options' => array(
-            "default" => true
-        ),
-        'indexName' => 'activable',
-        'cascade' => array(
-             'down' => true,
-             'up' => false,
-        )
-    );
+    protected $_options = array('name','alias','type','length','options','indexName','cascade');
 
     /**
      * __construct
@@ -40,7 +28,12 @@ class Doctrine_Template_Activable extends Doctrine_Template
      */
     public function __construct(array $options = array())
     {
-        $this->_options = Doctrine_Lib::arrayDeepMerge($this->_options, $options);
+        $_options = array();
+        foreach ($this->_options as $key)
+        {
+            $_options[$key] = sfConfig::get("app_activable_{$key}") ;
+        }
+        $this->_options = Doctrine_Lib::arrayDeepMerge($_options, $options);
     }
 
     /**
